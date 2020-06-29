@@ -207,7 +207,29 @@ async def button_push(controller_state, *buttons, sec=0.1):
 
     # send report
     await controller_state.send()
+    
 
+
+async def button_hold(controller_state, *buttons, sec=10):
+    if not buttons:
+        raise ValueError('No Buttons were given.')
+
+    button_state = controller_state.button_state
+
+    for button in buttons:
+        # push button
+        button_state.set_button(button)
+
+    # send report
+    await controller_state.send()
+    await asyncio.sleep(sec)
+
+    for button in buttons:
+        # release button
+        button_state.set_button(button, pushed=False)
+
+    # send report
+    await controller_state.send()
 
 class _StickCalibration:
     def __init__(self, h_center, v_center, h_max_above_center, v_max_above_center, h_max_below_center, v_max_below_center):
